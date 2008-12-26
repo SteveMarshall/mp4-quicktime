@@ -30,7 +30,7 @@ Use cases
 Reference
 ---------
 
-- [ISO 14496-1 Media Format layout][format layout] 
+- [ISO 14496-1 Media Format layout](http://www.geocities.com/xhelmboyx/quicktime/formats/mp4-layout.txt)
 
 
 Future plans
@@ -40,4 +40,3 @@ Future plans
 
 [MPEG4p14]: http://en.wikipedia.org/wiki/MPEG-4_Part_14
 [M4P.pm]:   http://search.cpan.org/~billh/Audio-M4P-0.51/lib/Audio/M4P/QuickTime.pm
-[format layout]: http://www.geocities.com/xhelmboyx/quicktime/formats/mp4-layout.txt
