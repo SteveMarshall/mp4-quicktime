@@ -297,7 +297,7 @@ class Atom(list):
         content = ''
         
         # Get content for this atom
-        if 0 < len(self):
+        if self.is_container():
             import StringIO
             content_stream = StringIO.StringIO()
             [atom.save(content_stream) for atom in self]
