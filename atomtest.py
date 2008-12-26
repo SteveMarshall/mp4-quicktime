@@ -255,9 +255,6 @@ class LoadContainerAtom(unittest.TestCase):
         
         self.assertEqual(self.child_type, child_atom.type)
         child_atom.seek(0)
-        print child_atom._Atom__size, ":", child_atom.tell()
-        print child_atom.read()
-        print 'done'
         self.assertEqual(self.child_content, child_atom.read())
     
 

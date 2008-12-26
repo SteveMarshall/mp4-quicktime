@@ -93,15 +93,12 @@ def parse_atom_header(stream, offset=0):
     # Remove the header from the size we use
     atom_size -= header_size
     
-    # If this is a regular atom, and not empty, jump back to the end of the 
-    # actual header (because we will have overrun into the content)
-    if header_size == basic_header \
-    and basic_header < atom_size:
-        # We've over-read from the stream, so jump back to where we should be
-        stream.seek(-(large_header - header_size), os.SEEK_CUR)
+    # Jump back to the end of the actual header because we will have overrun into
+    # the content, if we have a basic header)
+    offset_fix = -(len(atom_header) - header_size)
+    stream.seek(offset_fix, os.SEEK_CUR)
     
     return (atom_type, atom_size)
-    
 
 
 class Atom(list):
@@ -218,7 +215,7 @@ class Atom(list):
             elif self.tell() == self.__size:
                 self.seek(0, os.SEEK_END)
             
-            return self.__source_stream.read(self.__size)
+            return self.__source_stream.read(self.__size - self.tell())
         return ''
     
     def readline(self, size=-1):
