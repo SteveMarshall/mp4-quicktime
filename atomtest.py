@@ -303,51 +303,64 @@ class LoadedContainerAtomChildManipulation(unittest.TestCase):
     
 
 
-# class StoreLoadedContainerAtom(unittest.TestCase):
-#     type = 'moov'
-#     child_type = 'free'
-#     child_initial_content = 'line 1'
-#     child_new_content = 'line 2'
-#     
-#     def setUp(self):
-#         child_atom = atom.render_atom_header(self.child_type, \
-#             len(self.child_initial_content))
-#         child_atom += self.child_initial_content
-#         
-#         self.rendered_atom = atom.render_atom_header(self.type, len(child_atom))
-#         self.rendered_atom += child_atom
-#         
-#         init_stream = StringIO.StringIO()
-#         init_stream.write(self.rendered_atom)
-#         init_stream.seek(0)
-#         
-#         self.atom = atom.Atom(init_stream)
-#         
-#     
-#     def tearDown(self):
-#         del self.atom
-#         del self.rendered_atom
-#     
-#     def testCanSaveLoadedAtom(self):
-#         save_stream = StringIO.StringIO()
-#         self.atom.save(save_stream)
-#     
-#     def testSavedUnchangedAtomHasCorrectContent(self):
-#         save_stream = StringIO.StringIO()
-#         self.atom.save(save_stream)
-#         save_stream.seek(0)
-#         self.assertEqual(self.rendered_atom, save_stream.read())
-#     
-#     def testSavesChangesToChildAtom(self):
-#         print len(self.atom)
-#         self.atom[0].seek(0, os.SEEK_END)
-#         self.atom[0].write(self.child_new_content)
-#         self.atom[0].seek(0)
-#         save_stream = StringIO.StringIO()
-#         self.atom.save(save_stream)
-#         save_stream.seek(0)
-#         
-#         print save_stream.read()
+class StoreLoadedContainerAtom(unittest.TestCase):
+    type = 'moov'
+    child_type = 'free'
+    child_initial_content = 'line 1'
+    child_new_content = 'line 2'
+    
+    def setUp(self):
+        child_atom = atom.render_atom_header(self.child_type, \
+            len(self.child_initial_content))
+        child_atom += self.child_initial_content
+        
+        self.rendered_atom = atom.render_atom_header(self.type, len(child_atom))
+        self.rendered_atom += child_atom
+        
+        init_stream = StringIO.StringIO()
+        init_stream.write(self.rendered_atom)
+        init_stream.seek(0)
+        
+        self.atom = atom.Atom(init_stream)
+        
+    
+    def tearDown(self):
+        del self.atom
+        del self.rendered_atom
+    
+    def testCanSaveLoadedAtom(self):
+        save_stream = StringIO.StringIO()
+        self.atom.save(save_stream)
+    
+    def testSavedUnchangedAtomHasCorrectContent(self):
+        save_stream = StringIO.StringIO()
+        self.atom.save(save_stream)
+        save_stream.seek(0)
+        self.assertEqual(self.rendered_atom, save_stream.read())
+    
+    def testSavesChangesToChildAtom(self):
+        self.atom[0].seek(0, os.SEEK_END)
+        self.atom[0].write(self.child_new_content)
+        self.atom.seek(0)
+        save_stream = StringIO.StringIO()
+        self.atom.save(save_stream)
+        
+        save_stream.seek(0)
+        saved_atom = atom.Atom(save_stream)
+        
+        # Saved types/counts are correct
+        self.assertEqual(self.atom.type, saved_atom.type)
+        self.assertEqual(len(self.atom), len(saved_atom))
+        self.assertEqual(self.atom[0].type, saved_atom[0].type)
+        
+        # Saved child doesn't have initial content of old child
+        saved_atom[0].seek(0)
+        self.assertNotEqual(self.child_initial_content, saved_atom[0].read())
+        
+        # Saved child has same content as old child
+        self.atom[0].seek(0)
+        saved_atom[0].seek(0)
+        self.assertEqual(self.atom[0].read(), saved_atom[0].read())
 
 
 class SimpleDataAtom(unittest.TestCase):

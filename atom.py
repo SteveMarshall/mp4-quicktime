@@ -292,13 +292,19 @@ class Atom(list):
     # Storage
     
     def save(self, stream):
-        # NOTE: Dumping into content allows us to use len() to get content
+        # HACK: Dumping into content allows us to use len() to get content
         #       size easily, but will fall over for large content
         content = ''
         
         # Get content for this atom
-        # NOTE: Using in-memory storage won't be great for large files
-        if hasattr(self, '_Atom__data') \
+        if 0 < len(self):
+            import StringIO
+            content_stream = StringIO.StringIO()
+            [atom.save(content_stream) for atom in self]
+            
+            content_stream.seek(0)
+            content = content_stream.read()
+        elif hasattr(self, '_Atom__data') \
         or hasattr(self, '_Atom__source_stream'):
             # Store the initial position so we can seek back to there for
             # other users of our data
@@ -308,13 +314,6 @@ class Atom(list):
             content = self.read()
             
             self.seek(initial_position)
-        elif 0 < len(self):
-            import StringIO
-            content_stream = StringIO.StringIO()
-            [atom.save(content_stream) for atom in self]
-            
-            content_stream.seek(0)
-            content = content_stream.read()
         
         stream.write(render_atom_header(self.type, len(content)))
         if 0 < len(content):
