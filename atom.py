@@ -31,16 +31,16 @@ ATOM_CONTAINER_TYPES = [
 # Special containers with their own internal structures
 ATOM_SPECIAL_CONTAINER_TYPES = {
     'stsd': {
-        'padding': 16
+        'padding': 8
     },
     'mp4a': {
-        'padding': 36
+        'padding': 28
     },
     'drms': {
-        'padding': 36
+        'padding': 28
     },
     'meta': {
-        'padding': 12
+        'padding': 4
     },
 }
 ATOM_NONCONTAINER_TYPES = [

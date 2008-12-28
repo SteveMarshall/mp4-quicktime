@@ -427,7 +427,7 @@ class LoadSpecialContainerAtom(unittest.TestCase):
         init_stream.seek(0)
         
         self.atom = atom.Atom(init_stream)
-        
+    
     def tearDown(self):
         del self.atom
     
