@@ -31,16 +31,16 @@ ATOM_CONTAINER_TYPES = [
 # Special containers with their own internal structures
 ATOM_SPECIAL_CONTAINER_TYPES = {
     'stsd': {
-        'offset': 16
+        'padding': 16
     },
     'mp4a': {
-        'offset': 36
+        'padding': 36
     },
     'drms': {
-        'offset': 36
+        'padding': 36
     },
     'meta': {
-        'offset': 12
+        'padding': 12
     },
 }
 ATOM_NONCONTAINER_TYPES = [
@@ -125,7 +125,11 @@ class Atom(list):
             
             # Recursively build the tree; don't try to skip containers, 
             # as their leaf data atoms will do all the skipping for us
-            if self.is_container():
+            if self.is_special_container():
+                padding = ATOM_SPECIAL_CONTAINER_TYPES[self.type]['padding']
+                self.__source_stream.seek(padding, os.SEEK_CUR)
+                self.__load_children()
+            elif self.is_container():
                 self.__load_children()
             else:
                 self.__source_stream.seek(self.__size, os.SEEK_CUR)
@@ -143,7 +147,10 @@ class Atom(list):
             self.__data = None
     
     def is_container(self):
-        return self.type in ATOM_CONTAINER_TYPES
+        return self.is_special_container() or self.type in ATOM_CONTAINER_TYPES
+    
+    def is_special_container(self):
+        return self.type in ATOM_SPECIAL_CONTAINER_TYPES
     
     def __repr__(self):
         if not self.is_container():

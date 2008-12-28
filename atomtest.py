@@ -11,6 +11,7 @@ __license__ = "Python"
 import atom
 import os
 import StringIO
+import struct
 import unittest
 
 # TODO: Data atom equality based on content? Currently based on tempfile ref.
@@ -406,6 +407,37 @@ class StoreLoadedContainerAtom(unittest.TestCase):
         saved_atom[0].seek(0)
         self.assertEqual(self.atom[0].read(), saved_atom[0].read())
 
+class LoadSpecialContainerAtom(unittest.TestCase):
+    atom_type = 'stsd'
+    child_type = 'mp4a'
+    
+    def setUp(self):
+        child_padding = atom.ATOM_SPECIAL_CONTAINER_TYPES[self.child_type]['padding']
+        child_padding = ''.join(['x' for i in range(child_padding)])
+        child_atom = atom.render_atom_header(self.child_type, len(child_padding))
+        child_atom += child_padding
+        
+        atom_padding = atom.ATOM_SPECIAL_CONTAINER_TYPES[self.atom_type]['padding']
+        atom_padding = ''.join(['x' for i in range(atom_padding)])
+        self.rendered_atom = atom.render_atom_header(self.atom_type, len(atom_padding + child_atom))
+        self.rendered_atom += atom_padding + child_atom
+        
+        init_stream = StringIO.StringIO()
+        init_stream.write(self.rendered_atom)
+        init_stream.seek(0)
+        
+        self.atom = atom.Atom(init_stream)
+        
+    def tearDown(self):
+        del self.atom
+    
+    def testIsSpecialAtom(self):
+        self.assertTrue(self.atom.is_special_container())
+    
+    def tesCorrectStructure(self):
+        self.assertEqual(1, len(self.atom))
+        self.assertEqual(self.child_type, self.atom[0].type)
+        self.assertEqual(0, len(self.atom[0]))
 
 class SimpleDataAtom(unittest.TestCase):
     type = 'free'
