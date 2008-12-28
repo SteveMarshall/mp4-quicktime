@@ -22,17 +22,32 @@ ATOM_HEADER = {
 # Define known atom types
 ATOM_CONTAINER_TYPES = [
     'aaid', 'akid', '\xa9alb', 'apid', 'aART', '\xa9ART', 'atid', 'clip',
-    '\xa9cmt', '\xa9com', 'covr', 'cpil', 'cprt', '\xa9day', 'dinf',
-    'disk', 'drms', 'edts', 'geid', 'gnre', '\xa9grp', 'hinf', 'hnti',
-    'ilst', 'matt', 'mdia', 'meta', 'minf', 'moof', 'moov', 'mp4a',
-    '\xa9nam', 'pinf', 'plid', 'rtng', 'schi', 'sinf', 'stbl', 'stik',
-    'tmpo', '\xa9too', 'traf', 'trak', 'trkn', 'udta', '\xa9wrt',
+    '\xa9cmt', '\xa9com', 'covr', 'cpil', 'cprt', '\xa9day', 'dinf', 'disk',
+    'edts', 'geid', 'gnre', '\xa9grp', 'hinf', 'hnti', 'ilst', 'matt',
+    'mdia', 'minf', 'moof', 'moov', '\xa9nam', 'pinf', 'plid', 'rtng',
+    'schi', 'sinf', 'stbl', 'stik', 'tmpo', '\xa9too', 'traf', 'trak', 'trkn',
+    'udta', '\xa9wrt',
 ]
+# Special containers with their own internal structures
+ATOM_SPECIAL_CONTAINER_TYPES = {
+    'stsd': {
+        'offset': 16
+    },
+    'mp4a': {
+        'offset': 36
+    },
+    'drms': {
+        'offset': 36
+    },
+    'meta': {
+        'offset': 12
+    },
+}
 ATOM_NONCONTAINER_TYPES = [
-    'chtb', 'ctts', 'data', 'esds', 'free', 'frma', 'ftyp', '\xa9gen',
-    'hmhd', 'iviv', 'key ', 'mdat', 'mdhd', 'mp4s', 'mpv4', 'mvhd',
-    'name', 'priv', 'rtp', 'sign', 'stco', 'stsc', 'stsd', 'stp',
-    'stts', 'tfhd', 'tkhd', 'tref', 'trun', 'user', 'vmhd', 'wide',
+    'chtb', 'ctts', 'data', 'esds', 'free', 'frma', 'ftyp', '\xa9gen', 'hmhd',
+    'iviv', 'key ', 'mdat', 'mdhd', 'mp4s', 'mpv4', 'mvhd', 'name',
+    'priv', 'rtp', 'sign', 'stco', 'stsc', 'stp', 'stts', 'tfhd',
+    'tkhd', 'tref', 'trun', 'user', 'vmhd', 'wide',
 ]
 
 def get_header_size(content_size):
