@@ -303,6 +303,21 @@ class LoadComplexContainerAtom(unittest.TestCase):
         self.assertEqual(2, len(loaded_atom))
         self.assertEqual(2, len(loaded_atom[0]))
         self.assertEqual(0, len(loaded_atom[1]))
+    
+    def testReadDataAtom(self):
+        loaded_atom = atom.Atom(self.atom_stream)
+        loaded_atom[0][0].seek(0)
+        self.assertEqual(self.child_1_1_data, loaded_atom[0][0].read())
+    
+    def testIterateOverDataAtom(self):
+        loaded_atom = atom.Atom(self.atom_stream)
+        loaded_atom[0][0].seek(0)
+        lines = 0
+        for line in loaded_atom[0][0]:
+            loaded_atom[0][0].seek(0)
+            self.assertEqual(loaded_atom[0][0].read(), line)
+            lines += 1
+        self.assertEqual(1, lines)
 
 class LoadedContainerAtomChildManipulation(unittest.TestCase):
     type = 'moov'

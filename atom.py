@@ -6,6 +6,7 @@ __copyright__ = "Copyright (c) 2008 Steve Marshall"
 __license__ = "Python"
 
 import os
+import StringIO
 from struct import calcsize, pack, unpack
 import tempfile
 
@@ -311,7 +312,14 @@ class Atom(list):
         if not self.is_container() and hasattr(self, '_Atom__data'):
             return iter(self.__data)
         elif not self.is_container() and hasattr(self, '_Atom__source_stream'):
-            return iter(self.__source_stream)
+            # HACK: Slurp data into a temporary stream
+            iterable_stream = StringIO.StringIO()
+            prior_pos = self.__source_stream.tell()
+            self.seek(0)
+            iterable_stream.write(self.read())
+            iterable_stream.seek(0)
+            self.__source_stream.seek(prior_pos)
+            return iter(iterable_stream)
         
         return super(Atom, self).__iter__()
     
@@ -324,7 +332,6 @@ class Atom(list):
         
         # Get content for this atom
         if self.is_container():
-            import StringIO
             content_stream = StringIO.StringIO()
             [atom.save(content_stream) for atom in self]
             
