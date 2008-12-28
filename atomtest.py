@@ -258,6 +258,51 @@ class LoadContainerAtom(unittest.TestCase):
         self.assertEqual(self.child_content, child_atom.read())
     
 
+class LoadComplexContainerAtom(unittest.TestCase):
+    root_type = 'moov'
+    child_1_type = 'moov'
+    child_1_1_type = 'free'
+    child_1_1_data = '1.1'
+    child_1_2_type = 'free'
+    child_1_2_data = '1.2'
+    child_2_type = 'free'
+    child_2_data = '2'
+    
+    def setUp(self):
+        # TODO: Create some kind of atom-tree builder
+        child_1_1 = atom.render_atom_header(self.child_1_1_type, \
+            len(self.child_1_1_data))
+        child_1_1 += self.child_1_1_data
+        
+        child_1_2 = atom.render_atom_header(self.child_1_2_type, \
+            len(self.child_1_2_data))
+        child_1_2 += self.child_1_2_data
+        
+        child_1 = atom.render_atom_header(self.child_1_type, \
+            len(child_1_1 + child_1_2))
+        child_1 += child_1_1 + child_1_2
+        
+        child_2 = atom.render_atom_header(self.child_2_type, \
+            len(self.child_2_data))
+        child_2 += self.child_2_data
+        
+        self.rendered_atom = atom.render_atom_header(self.root_type, len(child_1 + child_2))
+        self.rendered_atom += child_1 + child_2
+        
+        self.atom_stream = StringIO.StringIO()
+        self.atom_stream.write(self.rendered_atom)
+        self.atom_stream.seek(0)
+    
+    def tearDown(self):
+        del self.rendered_atom
+        del self.atom_stream
+    
+    def testLoadedAtomIsCorrectlyStructured(self):
+        loaded_atom = atom.Atom(self.atom_stream)
+        self.assertEqual(2, len(loaded_atom))
+        self.assertEqual(2, len(loaded_atom[0]))
+        self.assertEqual(0, len(loaded_atom[1]))
+
 class LoadedContainerAtomChildManipulation(unittest.TestCase):
     type = 'moov'
     initial_child_type = 'free'
@@ -301,7 +346,6 @@ class LoadedContainerAtomChildManipulation(unittest.TestCase):
         self.atom[1].seek(0)
         self.assertEqual(self.new_child_content, self.atom[1].read())
     
-
 
 class StoreLoadedContainerAtom(unittest.TestCase):
     type = 'moov'

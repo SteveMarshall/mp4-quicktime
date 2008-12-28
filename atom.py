@@ -107,15 +107,19 @@ class Atom(list):
             (self.type, self.__size) = parse_atom_header(stream, offset)
             self.__offset = stream.tell()
             self.__source_stream = stream
+            
+            # Recursively build the tree; don't try to skip containers, 
+            # as their leaf data atoms will do all the skipping for us
             if self.is_container():
                 self.__load_children()
+            else:
+                self.__source_stream.seek(self.__size, os.SEEK_CUR)
         elif type is not None:
             self.type = type
     
     def __load_children(self):
         while self.tell() < self.__size:
             child = Atom(stream=self.__source_stream, offset=self.__source_stream.tell())
-            self.__source_stream.seek(child.__size, os.SEEK_CUR)
             self.append(child)
     
     def __del__(self):
