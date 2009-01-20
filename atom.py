@@ -132,13 +132,15 @@ class Atom(list):
                 self.__load_children()
             elif self.is_container():
                 self.__load_children()
-            else:
-                self.__source_stream.seek(self.__size, os.SEEK_CUR)
+            
+            # Skip over the rest of the atom
+            self.__source_stream.seek(self.__offset + self.__size)
         elif type is not None:
             self.type = type
     
     def __load_children(self):
-        while self.tell() < self.__size:
+        # If we don't have enough data left for another atom, abort
+        while calcsize(ATOM_HEADER['basic']) <= (self.__size - self.tell()):
             child = Atom(stream=self.__source_stream, offset=self.__source_stream.tell())
             self.append(child)
     

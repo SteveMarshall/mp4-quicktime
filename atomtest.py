@@ -259,6 +259,52 @@ class LoadContainerAtom(unittest.TestCase):
         self.assertEqual(self.child_content, child_atom.read())
     
 
+class LoadPaddedContainerAtoms(unittest.TestCase):
+    type = 'moov'
+    child_type = 'free'
+    child_content = 'line 1'
+    
+    def setUp(self):
+        self.padded_atom = atom.render_atom_header(self.type, struct.calcsize('xxxx'))
+        self.padded_atom += struct.pack('xxxx')
+        
+        self.filled_atom = atom.render_atom_header(self.child_type, \
+                len(self.child_content))
+        self.filled_atom += self.child_content
+    
+    def tearDown(self):
+        del self.padded_atom
+        del self.filled_atom
+    
+    def testOversizeContainerAtom(self):
+        rendered_atom = atom.render_atom_header(self.type, \
+            len(self.filled_atom) + struct.calcsize('xxxx'))
+        rendered_atom += self.filled_atom + struct.pack('xxxx')
+        
+        atom_stream = StringIO.StringIO()
+        atom_stream.write(rendered_atom)
+        atom_stream.seek(0)
+        loaded_atom = atom.Atom(atom_stream)
+        
+        self.assertEqual(self.type, loaded_atom.type)
+        self.assertEqual(self.child_type, loaded_atom[0].type)
+    
+    # TODO: Make this test fail after a given amount of time: success takes moments?
+    def testOversizeInternalAtom(self):
+        rendered_atom = atom.render_atom_header(self.type, \
+            len(self.padded_atom) + len(self.filled_atom))
+        rendered_atom += self.padded_atom + self.filled_atom
+        
+        atom_stream = StringIO.StringIO()
+        atom_stream.write(rendered_atom)
+        atom_stream.seek(0)
+        loaded_atom = atom.Atom(atom_stream)
+        
+        self.assertEqual(self.type, loaded_atom.type)
+        self.assertEqual(self.type, loaded_atom[0].type)
+        self.assertEqual(self.child_type, loaded_atom[1].type)
+    
+
 class LoadComplexContainerAtom(unittest.TestCase):
     root_type = 'moov'
     child_1_type = 'moov'
