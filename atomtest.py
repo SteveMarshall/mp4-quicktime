@@ -10,6 +10,7 @@ __license__ = "Python"
 
 import atom
 import os
+import signal
 import StringIO
 import struct
 import unittest
@@ -289,7 +290,9 @@ class LoadPaddedContainerAtoms(unittest.TestCase):
         self.assertEqual(self.type, loaded_atom.type)
         self.assertEqual(self.child_type, loaded_atom[0].type)
     
-    # TODO: Make this test fail after a given amount of time: success takes moments?
+    def timeout_handler(self, signum, frame):
+        raise Exception("Timed out!")
+    
     def testOversizeInternalAtom(self):
         rendered_atom = atom.render_atom_header(self.type, \
             len(self.padded_atom) + len(self.filled_atom))
@@ -298,6 +301,11 @@ class LoadPaddedContainerAtoms(unittest.TestCase):
         atom_stream = StringIO.StringIO()
         atom_stream.write(rendered_atom)
         atom_stream.seek(0)
+        
+        # Exception if this takes more than 2 seconds
+        signal.signal(signal.SIGALRM, self.timeout_handler)
+        signal.alarm(2)
+        
         loaded_atom = atom.Atom(atom_stream)
         
         self.assertEqual(self.type, loaded_atom.type)
