@@ -167,6 +167,7 @@ class Atom(list):
         
         # If types match on a container, delegate checking to the base
         # If types match for a data atom, delegate to __data if it exists
+        # TODO: Equality for loaded data atoms
         if other.type != self.type:
             equal = False
         if (other.type == self.type) and self.is_container():
@@ -220,6 +221,17 @@ class Atom(list):
                 raise TypeError, 'all items in slice are required to be Atoms'
         
         super(Atom, self).__setslice__(i, j, sequence)
+    
+    
+    def get_all_descendants(self):
+        # TODO: Is there a faster way to do this?
+        descendants = []
+        if self.is_container():
+            for child in self:
+                descendants.append(child)
+                descendants += child.get_all_descendants()
+        
+        return descendants
     
     # File-like behaviours
     
