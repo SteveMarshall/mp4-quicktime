@@ -386,6 +386,23 @@ class LoadComplexContainerAtom(unittest.TestCase):
         self.assertEqual(loaded_atom[0][1], descendants[2])
         self.assertEqual(loaded_atom[1], descendants[3])
     
+    def testGetChildrenOfType(self):
+        loaded_atom = atom.Atom(self.atom_stream)
+        children_of_type = loaded_atom.get_children_of_type(self.child_1_type)
+        
+        self.assertEqual(1, len(children_of_type))
+        self.assertEqual(loaded_atom[0], children_of_type[0])
+    
+    def testGetDescendantsOfType(self):
+        loaded_atom = atom.Atom(self.atom_stream)
+        descendants_of_type = loaded_atom.get_descendants_of_type(self.child_1_1_type)
+        
+        self.assertEqual(3, len(descendants_of_type))
+        self.assertEqual(loaded_atom[0][0], descendants_of_type[0])
+        self.assertEqual(loaded_atom[0][1], descendants_of_type[1])
+        self.assertEqual(loaded_atom[1], descendants_of_type[2])
+        
+    
 
 class LoadedContainerAtomChildManipulation(unittest.TestCase):
     type = 'moov'

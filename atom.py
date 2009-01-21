@@ -233,6 +233,24 @@ class Atom(list):
         
         return descendants
     
+    def get_children_of_type(self, type):
+        children = []
+        if self.is_container():
+            [children.append(child) for child in self if child.type == type]
+        
+        return children
+    
+    def get_descendants_of_type(self, type):
+        descendants = []
+        if self.is_container():
+            for child in self:
+                if child.type == type:
+                    descendants.append(child)
+                descendants += child.get_descendants_of_type(type)
+        
+        return descendants
+    
+    
     # File-like behaviours
     
     def next(self):
