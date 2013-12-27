@@ -10,7 +10,7 @@ import os
 
 class Mp4File(list):
     def __init__(self, file):
-        fh = open(file)
+        fh = open(file, 'rb')
         size = os.stat(file).st_size
         while fh.tell() < size:
             root_atom = Atom( stream=fh, offset=fh.tell() )
