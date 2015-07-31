@@ -30,7 +30,7 @@ Use cases
 Reference
 ---------
 
-- [ISO 14496-1 Media Format layout](http://www.geocities.com/xhelmboyx/quicktime/formats/mp4-layout.txt)
+- [ISO 14496-1 Media Format layout](http://xhelmboyx.tripod.com/formats/mp4-layout.txt)
 
 
 Future plans

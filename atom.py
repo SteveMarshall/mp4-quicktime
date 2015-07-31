@@ -105,14 +105,17 @@ def parse_atom_header(stream, offset=0):
         header_size = large_header
     else:
         header_size = basic_header
+
+    if 0 == atom_size:
+        stream.seek(0, os.SEEK_END)
+    else:
+        # Remove the header from the size we use
+        atom_size -= header_size
     
-    # Remove the header from the size we use
-    atom_size -= header_size
-    
-    # Jump back to the end of the actual header because we will have overrun into
-    # the content, if we have a basic header)
-    offset_fix = -(len(atom_header) - header_size)
-    stream.seek(offset_fix, os.SEEK_CUR)
+        # Jump back to the end of the actual header because we will have overrun into
+        # the content, if we have a basic header)
+        offset_fix = -(len(atom_header) - header_size)
+        stream.seek(offset_fix, os.SEEK_CUR)
     
     return (atom_type, atom_size)
 
