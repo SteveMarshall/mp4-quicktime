@@ -13,12 +13,15 @@ def print_atom(a, indent='  '):
                 children.append( print_atom( child, indent=indent + '  ' ) )
         return """{indent}{atom.type}: [
 {children}
-{indent}]""".format( 
+{indent}]""".format(
             atom=a,
             indent=indent,
             children=',\n'.join( children )
         )
-    return "%s%s" % (indent, a)
+    return "{indent}{atom.type}".format(
+        atom=a,
+        indent=indent,
+    )
 
 path = './'
 for mp4 in glob.glob( os.path.join(path, '*.mp4') ):

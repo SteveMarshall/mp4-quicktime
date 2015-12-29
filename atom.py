@@ -117,6 +117,14 @@ def parse_atom_header(stream, offset=0):
         offset_fix = -(len(atom_header) - header_size)
         stream.seek(offset_fix, os.SEEK_CUR)
     
+    if atom_type == 'tkhd':
+        print atom_type
+
+        header = stream.read(24)
+
+        duration = stream.read(4)
+        print struct.unpack("!I", duration)[0]
+
     return (atom_type, atom_size)
 
 
